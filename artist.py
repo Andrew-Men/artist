@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jan 27 13:02:32 2019
-
-@author: 90324
-"""
-#from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras.optimizers import SGD
@@ -19,9 +12,8 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.layers import Conv2D, Dense, Activation, MaxPooling2D
 from tensorflow.keras.layers import Flatten, BatchNormalization, Dropout
 from tensorflow.keras.layers import ReLU
-#from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.optimizers import Adam
-#from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.regularizers import l2
 
 FLAGS = tf.flags.FLAGS
