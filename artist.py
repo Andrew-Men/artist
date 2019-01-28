@@ -17,6 +17,7 @@ tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 tf.app.flags.DEFINE_integer("epoch", 30, "training epochs")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
 tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
+tf.app.flags.DEFINE_float("val_split", 0.2, "validation split rate")
 
 filter_num_1 = 32
 filter_num_2 = 64
@@ -163,11 +164,11 @@ if FLAGS.mode == 'train':
     else:
         print("wrong parameter: model!")
         exit()
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=50)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=50)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=10)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=10)
     _savemodel()
 else:
     print('wrong parameter: mode')
