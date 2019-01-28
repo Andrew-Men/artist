@@ -15,9 +15,9 @@ tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figu
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 
 dropout_rate = 0.2
-filter_num_1 = 16
-filter_num_2 = 32
-learnrate = 0.0001
+filter_num_1 = 32
+filter_num_2 = 64
+learnrate = 0.00003
 
 def load_and_preprocess():
     # define file path
@@ -98,11 +98,11 @@ def _savemodel():
 x_train, y_train = load_and_preprocess()
 if FLAGS.mode == 'train':
     model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=50)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=10)
     _savemodel()
 else:
     print('wrong parameter: mode')
