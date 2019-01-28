@@ -180,7 +180,7 @@ if FLAGS.mode == 'train':
         fill_mode='nearest')
 
     datagen.fit(x_train)
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=360)
+    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=20)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
