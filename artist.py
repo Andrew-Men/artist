@@ -13,11 +13,13 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string("mode", "train", "running mode")
 tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figure")
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
+tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
+tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
 
-dropout_rate = 0.2
 filter_num_1 = 32
 filter_num_2 = 64
-learnrate = 0.00003
+dropout_rate = FLAGS.dropout_rate
+learnrate = FLAGS.learnrate
 
 def load_and_preprocess():
     # define file path
@@ -48,6 +50,7 @@ def load_and_preprocess():
     return x_train, y_train
 
 # define network structure
+
 def _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate):
     model = Sequential()
     model.add(Conv2D(filter_num_1, (3, 3), activation='relu', input_shape=(256, 256, 3)))
