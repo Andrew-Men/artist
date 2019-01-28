@@ -76,7 +76,38 @@ def _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate):
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
     return model
-
+def _res(learnrate):
+	inpt = Input(shape=(256,256,3))
+	x = ZeroPadding2D((3,3))(inpt)
+	x = Conv2d_BN(x,nb_filter=64,kernel_size=(7,7),strides=(2,2),padding='valid')
+	x = MaxPooling2D(pool_size=(3,3),strides=(2,2),padding='same')(x)
+	#(56,56,64)
+	x = Conv_Block(x,nb_filter=64,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=64,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=64,kernel_size=(3,3))
+	#(28,28,128)
+	x = Conv_Block(x,nb_filter=128,kernel_size=(3,3),strides=(2,2),with_conv_shortcut=True)
+	x = Conv_Block(x,nb_filter=128,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=128,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=128,kernel_size=(3,3))
+	#(14,14,256)
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3),strides=(2,2),with_conv_shortcut=True)
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=256,kernel_size=(3,3))
+	#(7,7,512)
+	x = Conv_Block(x,nb_filter=512,kernel_size=(3,3),strides=(2,2),with_conv_shortcut=True)
+	x = Conv_Block(x,nb_filter=512,kernel_size=(3,3))
+	x = Conv_Block(x,nb_filter=512,kernel_size=(3,3))
+	x = AveragePooling2D(pool_size=(7,7))(x)
+	x = Flatten()(x)
+	x = Dense(11,activation='softmax')(x)
+	model = Model(inputs=inpt,outputs=x)
+	adam = Adam(lr=learnrate)# 0.0001
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
+	return model
 # plot training process
 def _visualize():
     # FIX CRASH #
