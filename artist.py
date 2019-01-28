@@ -23,6 +23,7 @@ filter_num_1 = 32
 filter_num_2 = 64
 dropout_rate = FLAGS.dropout_rate
 learnrate = FLAGS.learnrate
+epoch = FLAGS.epoch
 
 def load_and_preprocess():
     # define file path
@@ -50,7 +51,8 @@ def load_and_preprocess():
     
     x_train=x_train[index,:,:,:]#X_train是训练集，y_train是训练标签
     y_train=y_train[index]
-    return x_train, y_train
+
+    return x_train[0:360,:,:,:], y_train[0:360], x_train[360:,:,:,:], y_train[360:]
 
 # define network structure
 
@@ -155,7 +157,7 @@ def _savemodel():
     if FLAGS.save != 0:
         model.save(filepath='model.h5')
 
-x_train, y_train = load_and_preprocess()
+x_train, y_train, x_val, y_val = load_and_preprocess()
 if FLAGS.mode == 'train':
     if FLAGS.model == 'cnn':
         model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
@@ -164,11 +166,25 @@ if FLAGS.mode == 'train':
     else:
         print("wrong parameter: model!")
         exit()
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=50)
+
+
+
+    # data enhancement
+    datagen = ImageDataGenerator(
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        fill_mode='nearest')
+
+    datagen.fit(x_train)
+    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=1)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
-    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=10)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=epoch)
     _savemodel()
 else:
     print('wrong parameter: mode')
