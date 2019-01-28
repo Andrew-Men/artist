@@ -172,10 +172,10 @@ if FLAGS.mode == 'train':
     # data enhancement
     datagen = ImageDataGenerator(
         rotation_range=20,
-        width_shift_range=0.2,
-        height_shift_range=0.1,
-        zoom_range=0.1,
-        horizontal_flip=True,
+        # width_shift_range=0.2,
+        # height_shift_range=0.1,
+        # zoom_range=0.1,
+        # horizontal_flip=True,
         fill_mode='nearest')
 
     datagen.fit(x_train)
