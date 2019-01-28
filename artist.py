@@ -1,3 +1,5 @@
+from sklearn.model_selection import train_test_split
+
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
@@ -31,11 +33,9 @@ model_name = "log/" + 'my_model.h5'
 #--------------------------------------------------------#
 
 def split_train(data,label,test_ratio):
-    shuffled_indices=np.random.permutation(len(data))
-    test_set_size=int(len(data)*test_ratio)
-    test_indices =shuffled_indices[:test_set_size]
-    train_indices=shuffled_indices[test_set_size:]
-    return data[train_indices],data[test_indices],label[train_indices],label[test_indices]
+    train_data, test_data, train_label, test_label = train_test_split(train_input, train_label, test_size=0.10,
+                                                                  random_state=0)
+    return train_data, test_data, train_label, test_label
 
 def _cnn(imgs_dim, compile_=True):
     model = Sequential()
