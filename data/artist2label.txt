@@ -1,0 +1,11 @@
+jmw_turner            0
+george_romney         1
+canaletto             2 
+claude_monet          3
+peter_paul_rubens     4
+paul_sandby           5
+rembrandt             6
+paul_gauguin          7
+john_robert_cozens    8
+richard_wilson        9
+paul_cezanne          10
