@@ -1,10 +1,9 @@
-from sklearn.model_selection import train_test_split
 import sklearn
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
-from keras.optimizers import SGD, Adagrad
+from keras.optimizers import SGD, Adagrad, Adam
 from keras.models import load_model
 from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
@@ -16,7 +15,7 @@ matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 
 # define parameter
-dropout_rate = 0
+dropout_rate = 0.2
 filter_num_1 = 16
 filter_num_2 = 32
 
@@ -40,6 +39,13 @@ train_label_encoded = to_categorical(np.array(train_label))
 # Generate dummy data
 x_train = train_data
 y_train = train_label_encoded
+index=np.arange(405)
+np.random.shuffle(index)
+ 
+x_train=x_train[index,:,:,:]#X_train是训练集，y_train是训练标签
+y_train=y_train[index]
+
+
 
 model = Sequential()
 
@@ -62,23 +68,23 @@ model.add(Dense(11, activation='softmax'))
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 adagrad = Adagrad(lr=0.0006, epsilon=None, decay=0.0)
+adam = Adam(lr=0.0001)
 
-model.compile(loss='categorical_crossentropy', optimizer=adagrad, metrics=['acc'])
+model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 
 # data enhancement
-datagen = ImageDataGenerator(
-    rotation_range=40,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest')
+# datagen = ImageDataGenerator(
+#     rotation_range=40,
+#     width_shift_range=0.2,
+#     height_shift_range=0.2,
+#     shear_range=0.2,
+#     zoom_range=0.2,
+#     horizontal_flip=True,
+#     fill_mode='nearest')
 
-datagen.fit(x_train)
+# datagen.fit(x_train)
 
-history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
-                              steps_per_epoch=len(x_train) / 32, validation_split=0.2, epochs=60)
+history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=10)
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
