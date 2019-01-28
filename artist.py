@@ -67,7 +67,7 @@ model.add(Dropout(dropout_rate))
 model.add(Dense(11, activation='softmax'))
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-adagrad = Adagrad(lr=0.0005, epsilon=None, decay=0.0)
+adagrad = Adagrad(lr=0.0006, epsilon=None, decay=0.0)
 
 model.compile(loss='categorical_crossentropy', optimizer=adagrad, metrics=['acc'])
 
@@ -84,7 +84,7 @@ datagen = ImageDataGenerator(
 datagen.fit(x_train)
 
 history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
-                              steps_per_epoch=len(x_train) / 32, epochs=50, validation_data=(x_test, y_test))
+                              steps_per_epoch=len(x_train) / 32, epochs=20, validation_data=(x_test, y_test))
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
@@ -97,11 +97,6 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-# plt.figure(2)
-# plt.ylabel('loss')
-# plt.xlabel('epoch')
-# plt.legend(['train', 'test'], loc='upper left')
-# plt.show()
 
 
 score = model.evaluate(x_test, y_test, batch_size=32)
