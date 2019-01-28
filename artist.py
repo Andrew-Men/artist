@@ -16,7 +16,7 @@ matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 
 # define parameter
-dropout_rate = 0
+dropout_rate = 0.1
 filter_num_1 = 16
 filter_num_2 = 32
 
@@ -84,7 +84,7 @@ datagen = ImageDataGenerator(
 datagen.fit(x_train)
 
 history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
-                              steps_per_epoch=len(x_train) / 32, epochs=20, validation_data=(x_test, y_test))
+                              steps_per_epoch=len(x_train) / 32, epochs=60, validation_data=(x_test, y_test))
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
