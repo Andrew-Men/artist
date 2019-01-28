@@ -14,6 +14,7 @@ tf.app.flags.DEFINE_string("mode", "train", "running mode")
 tf.app.flags.DEFINE_string("model", 'cnn', "model")
 tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figure")
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
+tf.app.flags.DEFINE_integer("epoch", 30, "training epochs")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
 tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
 
