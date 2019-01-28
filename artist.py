@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figu
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 tf.app.flags.DEFINE_integer("epoch", 30, "training epochs")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
-tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
+tf.app.flags.DEFINE_float("learnrate", 0.00001, "")
 tf.app.flags.DEFINE_float("val_split", 0.2, "validation split rate")
 
 filter_num_1 = 32
@@ -178,7 +178,7 @@ if FLAGS.mode == 'train':
         fill_mode='nearest')
 
     datagen.fit(x_train)
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=15)
+    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=12)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
