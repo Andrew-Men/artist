@@ -91,8 +91,21 @@ if FLAGS.mode == 'train':
     model.compile(
         loss='categorical_crossentropy',
         optimizer=adam,
-        metrics=['accuracy'])    
-    model.fit(x_train, y_train, batch_size=32, epochs=20, validation_data=(x_test, y_test) )
+        metrics=['accuracy'])
+    
+    # data enhancement
+    datagen = ImageDataGenerator(
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        fill_mode='nearest')
+    datagen.fit(x_train)
+    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
+                                steps_per_epoch=len(x_train) / 32, epochs=20, validation_data=(x_test, y_test))
+
     score = model.evaluate(x_test, y_test, batch_size=32)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
