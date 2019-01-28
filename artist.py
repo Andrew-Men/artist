@@ -1,125 +1,120 @@
 from sklearn.model_selection import train_test_split
-
-import tensorflow as tf
-from tensorflow import keras
+import sklearn
 import numpy as np
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Dropout, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from tensorflow.keras.optimizers import SGD
-from numpy import array
-from numpy import argmax
-from tensorflow.keras.utils import to_categorical
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from keras.optimizers import SGD, Adagrad
+from keras.models import load_model
+from keras.utils import to_categorical
+from keras.preprocessing.image import ImageDataGenerator
 
-from tensorflow.keras.layers import Conv2D, Dense, Activation, MaxPooling2D
-from tensorflow.keras.layers import Flatten, BatchNormalization, Dropout
-from tensorflow.keras.layers import ReLU
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.regularizers import l2
+# FIX CRASH #
+import matplotlib
+matplotlib.use("TkAgg")
+# --------- #
+from matplotlib import pyplot as plt
 
-FLAGS = tf.flags.FLAGS
-tf.flags.DEFINE_integer("batch_size", "32", "batch size for training")
-tf.flags.DEFINE_string('mode', "train", "Mode train/ predict/ visualize")
-tf.flags.DEFINE_bool('load', 'False', "True/ False")
+# define parameter
+dropout_rate = 0.3
+filter_num_1 = 16
+filter_num_2 = 32
 
-#------------------Define Filepath-----------------------#
+# define file path
 train_data_path = 'data/train_input.npy'
 train_label_path = 'data/train_label.npy'
-predict_data_path = 'data/test_input.npy'
-result_path = "result"
-log_path = "log/"
-model_name = "log/" + 'my_model.h5'
-#--------------------------------------------------------#
+test_train_path = 'data/test_input.npy'
 
-def split_train(data,label,test_ratio):
-    train_data, test_data, train_label, test_label = train_test_split(data, label, test_size=test_ratio,
-                                                                  random_state=0)
-    return train_data, test_data, train_label, test_label
-
-def _cnn(imgs_dim, compile_=True):
-    model = Sequential()
-    # input: 256x256 images with 3 channels -> (256, 256, 3) tensors.
-    # this applies 32 convolution filters of size 3x3 each.
-    model.add(Conv2D(16, (3, 3), kernel_initializer='he_normal', activation='relu', input_shape=(256, 256, 3)))
-    model.add(Conv2D(16, (3, 3), kernel_initializer='he_normal', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-    
-    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu'))
-    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu'))
-    model.add(BatchNormalization())
-
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-    
-    model.add(Flatten())
-    model.add(Dense(256, kernel_initializer='he_normal', activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(11, kernel_initializer='glorot_normal', activation='softmax'))
-    return model
-    
+# load data
 train_input = np.load(train_data_path)
 train_label = np.load(train_label_path)
 
-train_data,test_data,train_label,test_label = split_train(train_input, train_label, 0.10)
-
-class_names = ['jmw_turner','george_romney','canaletto',
-               'claude_monet','peter_paul_rubens','paul_sandby',
-               'rembrandt', 'paul_gauguin', 'john_robert_cozens',
-               'richard_wilson','paul_cezanne']
-
-
-#------------------Data Preprocess-----------------------#
+# split and preprocess data
+train_data, test_data, train_label, test_label = train_test_split(train_input, train_label, test_size=0.10,
+                                                                  random_state=0)
+# class_names = ['jmw_turner', 'george_romney', 'canaletto',
+#                'claude_monet', 'peter_paul_rubens', 'paul_sandby',
+#                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
+#                'richard_wilson', 'paul_cezanne']
 train_data = train_data / 255.0
 test_data = test_data / 255.0
-# one hot encode
-train_label_encoded = to_categorical(array(train_label))
-test_label_encoded = to_categorical(array(test_label))
+train_label_encoded = to_categorical(np.array(train_label))
+test_label_encoded = to_categorical(np.array(test_label))
+
+# Generate dummy data
 x_train = train_data
 y_train = train_label_encoded
 x_test = test_data
 y_test = test_label_encoded
-#--------------------------------------------------------#
+
+model = Sequential()
+
+model.add(Conv2D(filter_num_1, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+model.add(Conv2D(filter_num_1, (3, 3), activation='relu'))
+model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(dropout_rate))
+
+model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
+model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
+model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(dropout_rate))
+
+model.add(Flatten())
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(dropout_rate))
+model.add(Dense(11, activation='softmax'))
+
+sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+adagrad = Adagrad(lr=0.01, epsilon=None, decay=0.0)
+
+model.compile(loss='categorical_crossentropy', optimizer=adagrad, metrics=['acc'])
+
+# data enhancement
+datagen = ImageDataGenerator(
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest')
+
+datagen.fit(x_train)
+
+history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
+                              steps_per_epoch=len(x_train) / 32, epochs=50, validation_data=(x_test, y_test))
+
+fit(x_train, y_train, batch_size=32, epochs=80, validation_data=(x_test, y_test))
+
+model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
+
+# plot training process
+plt.figure(1)
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# plt.figure(2)
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
 
 
-if FLAGS.load == True:
-    model = load_model(model_name)
-else:
-    model = _cnn(imgs_dim=(256, 256, 3))
-    
+score = model.evaluate(x_test, y_test, batch_size=32)
+print(score)
 
-    
-    
-if FLAGS.mode == 'train':    
-    adam = Adam(lr=0.0001)
-    model.compile(
-        loss='categorical_crossentropy',
-        optimizer=adam,
-        metrics=['accuracy'])
-    
-    # data enhancement
-    datagen = ImageDataGenerator(
-        rotation_range=40,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        fill_mode='nearest')
-    datagen.fit(x_train)
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
-                                steps_per_epoch=len(x_train) / 32, epochs=20, validation_data=(x_test, y_test))
+model = load_model('/Users/eis/Desktop/data/model-bn.h5')
+pre_label = model.predict(test_data)
 
-    score = model.evaluate(x_test, y_test, batch_size=32)
-    print('Test loss:', score[0])
-    print('Test accuracy:', score[1])
-    #model.save(result_path+'/my_model.h5')  # creates a HDF5 file 'my_model.h5'
-#if FLAGS.mode == 'predict':
-    predict_data = np.load(predict_data_path)
-    result = model.predict(predict_data)
-    result_label = argmax(result,axis=1)
-    #result_label = [class_names[i] for i in result_label]
-    with open(result_path+'/result.txt',"w") as f:
-            f.write(str(result_label)) 
+label = []
+for i in pre_label:
+    label += np.where(i == np.max(i))[0].tolist()
+
+print(pre_label)
+print(label)
