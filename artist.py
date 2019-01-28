@@ -21,12 +21,15 @@ tf.flags.DEFINE_integer("batch_size", "32", "batch size for training")
 tf.flags.DEFINE_string('mode', "train", "Mode train/ predict/ visualize")
 tf.flags.DEFINE_bool('load', 'False', "True/ False")
 
+#------------------Define Filepath-----------------------#
 train_data_path = 'data/train_input.npy'
 train_label_path = 'data/train_label.npy'
 predict_data_path = 'data/test_input.npy'
 result_path = "result"
 log_path = "log/"
 model_name = "log/" + 'my_model.h5'
+#--------------------------------------------------------#
+
 def split_train(data,label,test_ratio):
     shuffled_indices=np.random.permutation(len(data))
     test_set_size=int(len(data)*test_ratio)
@@ -67,7 +70,8 @@ class_names = ['jmw_turner','george_romney','canaletto',
                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
                'richard_wilson','paul_cezanne']
 
-# data preprocess
+
+#------------------Data Preprocess-----------------------#
 train_data = train_data / 255.0
 test_data = test_data / 255.0
 # one hot encode
@@ -77,6 +81,8 @@ x_train = train_data
 y_train = train_label_encoded
 x_test = test_data
 y_test = test_label_encoded
+#--------------------------------------------------------#
+
 
 if FLAGS.load == True:
     model = load_model(model_name)
