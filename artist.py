@@ -16,7 +16,7 @@ matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 
 # define parameter
-dropout_rate = 0.3
+dropout_rate = 0
 filter_num_1 = 16
 filter_num_2 = 32
 
