@@ -171,16 +171,15 @@ if FLAGS.mode == 'train':
 
     # data enhancement
     datagen = ImageDataGenerator(
-        rotation_range=40,
+        rotation_range=30,
         width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
+        height_shift_range=0.1,
+        zoom_range=0.1,
         horizontal_flip=True,
         fill_mode='nearest')
 
     datagen.fit(x_train)
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=20)
+    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=15)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
