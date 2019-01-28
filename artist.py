@@ -30,22 +30,16 @@ train_input = np.load(train_data_path)
 train_label = np.load(train_label_path)
 
 # split and preprocess data
-train_data, test_data, train_label, test_label = train_test_split(train_input, train_label, test_size=0.10,
-                                                                  random_state=0)
 # class_names = ['jmw_turner', 'george_romney', 'canaletto',
 #                'claude_monet', 'peter_paul_rubens', 'paul_sandby',
 #                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
 #                'richard_wilson', 'paul_cezanne']
-train_data = train_data / 255.0
-test_data = test_data / 255.0
+train_data = train_input / 255.0
 train_label_encoded = to_categorical(np.array(train_label))
-test_label_encoded = to_categorical(np.array(test_label))
 
 # Generate dummy data
 x_train = train_data
 y_train = train_label_encoded
-x_test = test_data
-y_test = test_label_encoded
 
 model = Sequential()
 
@@ -84,7 +78,7 @@ datagen = ImageDataGenerator(
 datagen.fit(x_train)
 
 history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
-                              steps_per_epoch=len(x_train) / 32, epochs=60, validation_data=(x_test, y_test))
+                              steps_per_epoch=len(x_train) / 32, epochs=60, validation_split=0.2)
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
@@ -101,13 +95,3 @@ plt.show()
 
 score = model.evaluate(x_test, y_test, batch_size=32)
 print(score)
-
-model = load_model('/Users/eis/Desktop/data/model-bn.h5')
-pre_label = model.predict(test_data)
-
-label = []
-for i in pre_label:
-    label += np.where(i == np.max(i))[0].tolist()
-
-print(pre_label)
-print(label)
