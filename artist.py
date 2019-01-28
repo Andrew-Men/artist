@@ -7,16 +7,11 @@ from keras.models import load_model
 from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 
-# FIX CRASH #
-import matplotlib
-matplotlib.use("TkAgg")
-# --------- #
-from matplotlib import pyplot as plt
-
 # define parameter
 dropout_rate = 0.2
 filter_num_1 = 16
 filter_num_2 = 32
+learnrate = 0.0001
 
 # define file path
 train_data_path = 'data/train_input.npy'
@@ -38,38 +33,62 @@ train_label_encoded = to_categorical(np.array(train_label))
 # Generate dummy data
 x_train = train_data
 y_train = train_label_encoded
-index=np.arange(405)
+index=np.arange(len(y_train))
 np.random.shuffle(index)
  
 x_train=x_train[index,:,:,:]#X_train是训练集，y_train是训练标签
 y_train=y_train[index]
 
+# define network structure
+def _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate):
+    model = Sequential()
+    model.add(Conv2D(filter_num_1, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+    model.add(Conv2D(filter_num_1, (3, 3), activation='relu'))
+    model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(dropout_rate))
+
+    model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
+    model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
+    model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(dropout_rate))
+
+    model.add(Flatten())
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(dropout_rate))
+    model.add(Dense(11, activation='softmax'))
+
+    #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    #adagrad = Adagrad(lr=0.0006, epsilon=None, decay=0.0)
+    adam = Adam(lr=learnrate)# 0.0001
+
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
+    return model
+
+# plot training process
+def _visualize():
+    # FIX CRASH #
+    import matplotlib
+    matplotlib.use("TkAgg")
+    # --------- #
+    
+    from matplotlib import pyplot as plt
+    plt.figure(1)
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.savefig('train.png')
+
+model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
+history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+
+# model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
 
-model = Sequential()
-
-model.add(Conv2D(filter_num_1, (3, 3), activation='relu', input_shape=(256, 256, 3)))
-model.add(Conv2D(filter_num_1, (3, 3), activation='relu'))
-model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(dropout_rate))
-
-model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
-model.add(Conv2D(filter_num_2, (3, 3), activation='relu'))
-model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(dropout_rate))
-
-model.add(Flatten())
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(dropout_rate))
-model.add(Dense(11, activation='softmax'))
-
-sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-adagrad = Adagrad(lr=0.0006, epsilon=None, decay=0.0)
-adam = Adam(lr=0.0001)
-
-model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 
 # data enhancement
 # datagen = ImageDataGenerator(
@@ -82,18 +101,3 @@ model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 #     fill_mode='nearest')
 
 # datagen.fit(x_train)
-
-history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
-
-model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
-
-# plot training process
-plt.figure(1)
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
