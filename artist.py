@@ -67,7 +67,7 @@ model.add(Dropout(dropout_rate))
 model.add(Dense(11, activation='softmax'))
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-adagrad = Adagrad(lr=0.01, epsilon=None, decay=0.0)
+adagrad = Adagrad(lr=0.001, epsilon=None, decay=0.0)
 
 model.compile(loss='categorical_crossentropy', optimizer=adagrad, metrics=['acc'])
 
