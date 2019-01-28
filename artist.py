@@ -70,9 +70,9 @@ class_names = ['jmw_turner','george_romney','canaletto',
                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
                'richard_wilson','paul_cezanne']
 
+# data preprocess
 train_data = train_data / 255.0
 test_data = test_data / 255.0
-
 # one hot encode
 train_label_encoded = to_categorical(array(train_label))
 test_label_encoded = to_categorical(array(test_label))
@@ -82,7 +82,7 @@ x_test = test_data
 y_test = test_label_encoded
 
 if FLAGS.load == True:
-    model = keras.load_model(model_name)
+    model = load_model(model_name)
 else:
     model = _cnn(imgs_dim=(256, 256, 3))
     
