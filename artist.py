@@ -11,12 +11,13 @@ from keras.preprocessing.image import ImageDataGenerator
 # define parameter
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string("mode", "train", "running mode")
-tf.app.flags.DEFINE_string("model", "cnn", "model")
+tf.app.flags.DEFINE_string("model", 'cnn', "model")
 tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figure")
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
 tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
 
+print(FLAGS.model)
 filter_num_1 = 32
 filter_num_2 = 64
 dropout_rate = FLAGS.dropout_rate
@@ -133,9 +134,9 @@ def _savemodel():
 
 x_train, y_train = load_and_preprocess()
 if FLAGS.mode == 'train':
-    if FLAGS == "cnn":
+    if FLAGS.model == 'cnn':
         model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
-    elif FLAGS == "res":
+    elif FLAGS.model == 'res':
         model = _res(learnrate)
     else:
         print("wrong parameter: model!")
