@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, Flatten, Input, Activation, AveragePooling2D
+from keras.layers import add, Conv2D, MaxPooling2D, BatchNormalization, ZeroPadding2D
 from keras.optimizers import SGD, Adagrad, Adam
 from keras.models import load_model
 from keras.utils import to_categorical
@@ -17,7 +17,6 @@ tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
 tf.app.flags.DEFINE_float("learnrate", 0.00003, "")
 
-print(FLAGS.model)
 filter_num_1 = 32
 filter_num_2 = 64
 dropout_rate = FLAGS.dropout_rate
@@ -89,8 +88,7 @@ def Conv2d_BN(x, nb_filter,kernel_size, strides=(1,1), padding='same',name=None)
  
     x = Conv2D(nb_filter,kernel_size,padding=padding,strides=strides,activation='relu',name=conv_name)(x)
     x = BatchNormalization(axis=3,name=bn_name)(x)
-    return x
- 
+    return x 
 def Conv_Block(inpt,nb_filter,kernel_size,strides=(1,1), with_conv_shortcut=False):
     x = Conv2d_BN(inpt,nb_filter=nb_filter,kernel_size=kernel_size,strides=strides,padding='same')
     x = Conv2d_BN(x, nb_filter=nb_filter, kernel_size=kernel_size,padding='same')
