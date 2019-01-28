@@ -86,8 +86,6 @@ datagen.fit(x_train)
 history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32),
                               steps_per_epoch=len(x_train) / 32, epochs=50, validation_data=(x_test, y_test))
 
-fit(x_train, y_train, batch_size=32, epochs=80, validation_data=(x_test, y_test))
-
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
 # plot training process
