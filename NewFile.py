@@ -7,12 +7,6 @@ from keras.models import load_model
 from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 
-# FIX CRASH #
-import matplotlib
-matplotlib.use("TkAgg")
-# --------- #
-from matplotlib import pyplot as plt
-
 # define parameter
 dropout_rate = 0.2
 filter_num_1 = 16
@@ -71,29 +65,8 @@ adam = Adam(lr=0.0001)
 
 model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 
-# data enhancement
-# datagen = ImageDataGenerator(
-#     rotation_range=40,
-#     width_shift_range=0.2,
-#     height_shift_range=0.2,
-#     shear_range=0.2,
-#     zoom_range=0.2,
-#     horizontal_flip=True,
-#     fill_mode='nearest')
-
-# datagen.fit(x_train)
-
 history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=20)
 
-model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
+#model.save(filepath='data/model-bn.h5')
 
-# plot training process
-plt.figure(1)
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
 
