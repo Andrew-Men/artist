@@ -83,7 +83,7 @@ model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 
 # datagen.fit(x_train)
 
-history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=20)
+history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
