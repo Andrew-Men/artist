@@ -13,31 +13,33 @@ filter_num_1 = 16
 filter_num_2 = 32
 learnrate = 0.0001
 
-# define file path
-train_data_path = 'data/train_input.npy'
-train_label_path = 'data/train_label.npy'
-test_train_path = 'data/test_input.npy'
+def load_and_preprocess():
+    # define file path
+    train_data_path = 'data/train_input.npy'
+    train_label_path = 'data/train_label.npy'
+    #test_train_path = 'data/test_input.npy'
 
-# load data
-train_input = np.load(train_data_path)
-train_label = np.load(train_label_path)
+    # load data
+    train_input = np.load(train_data_path)
+    train_label = np.load(train_label_path)
 
-# split and preprocess data
-# class_names = ['jmw_turner', 'george_romney', 'canaletto',
-#                'claude_monet', 'peter_paul_rubens', 'paul_sandby',
-#                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
-#                'richard_wilson', 'paul_cezanne']
-train_data = train_input / 255.0
-train_label_encoded = to_categorical(np.array(train_label))
+    # split and preprocess data
+    # class_names = ['jmw_turner', 'george_romney', 'canaletto',
+    #                'claude_monet', 'peter_paul_rubens', 'paul_sandby',
+    #                'rembrandt', 'paul_gauguin', 'john_robert_cozens',
+    #                'richard_wilson', 'paul_cezanne']
+    train_data = train_input / 255.0
+    train_label_encoded = to_categorical(np.array(train_label))
 
-# Generate dummy data
-x_train = train_data
-y_train = train_label_encoded
-index=np.arange(len(y_train))
-np.random.shuffle(index)
- 
-x_train=x_train[index,:,:,:]#X_train是训练集，y_train是训练标签
-y_train=y_train[index]
+    # Generate dummy data
+    x_train = train_data
+    y_train = train_label_encoded
+    index=np.arange(len(y_train))
+    np.random.shuffle(index)
+    
+    x_train=x_train[index,:,:,:]#X_train是训练集，y_train是训练标签
+    y_train=y_train[index]
+    return x_train, y_train
 
 # define network structure
 def _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate):
@@ -72,7 +74,7 @@ def _visualize():
     import matplotlib
     matplotlib.use("TkAgg")
     # --------- #
-    
+
     from matplotlib import pyplot as plt
     plt.figure(1)
     plt.plot(history.history['acc'])
@@ -83,6 +85,7 @@ def _visualize():
     plt.legend(['train', 'test'], loc='upper left')
     plt.savefig('train.png')
 
+x_train, y_train = load_and_preprocess()
 model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
 history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
 
