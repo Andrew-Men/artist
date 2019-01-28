@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
@@ -8,6 +9,11 @@ from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 
 # define parameter
+FLAGS = tf.app.flags.FLAGS
+tf.app.flags.DEFINE_string("mode", "train", "running mode")
+tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figure")
+tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
+
 dropout_rate = 0.2
 filter_num_1 = 16
 filter_num_2 = 32
@@ -85,9 +91,26 @@ def _visualize():
     plt.legend(['train', 'test'], loc='upper left')
     plt.savefig('train.png')
 
+def _savemodel():
+    if FLAGS.save != 0:
+        model.save(filepath='model.h5')
+
 x_train, y_train = load_and_preprocess()
-model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
-history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+if FLAGS.mode == 'train':
+    model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+    _savemodel()
+elif FLAGS.mode == 'load':
+    model = load_model(filepath='model.h5')
+    history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=100)
+    _savemodel()
+else:
+    print('wrong parameter: mode')
+    exit(1)
+if FLAGS.fig !=0:
+    _visualize()
+
+
 
 # model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
