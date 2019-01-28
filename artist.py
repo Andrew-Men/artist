@@ -38,17 +38,14 @@ def _cnn(imgs_dim, compile_=True):
     model = Sequential()
     # input: 256x256 images with 3 channels -> (256, 256, 3) tensors.
     # this applies 32 convolution filters of size 3x3 each.
-    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu', input_shape=(256, 256, 3)))
-    model.add(BatchNormalization())
-    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu'))
+    model.add(Conv2D(16, (3, 3), kernel_initializer='he_normal', activation='relu', input_shape=(256, 256, 3)))
+    model.add(Conv2D(16, (3, 3), kernel_initializer='he_normal', activation='relu'))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     
-    model.add(Conv2D(64, (3, 3), kernel_initializer='he_normal', activation='relu'))
-    model.add(BatchNormalization())
-
-    model.add(Conv2D(64, (3, 3), kernel_initializer='he_normal', activation='relu'))
+    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu'))
+    model.add(Conv2D(32, (3, 3), kernel_initializer='he_normal', activation='relu'))
     model.add(BatchNormalization())
 
     model.add(MaxPooling2D(pool_size=(2, 2)))
