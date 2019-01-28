@@ -33,7 +33,7 @@ model_name = "log/" + 'my_model.h5'
 #--------------------------------------------------------#
 
 def split_train(data,label,test_ratio):
-    train_data, test_data, train_label, test_label = train_test_split(train_input, train_label, test_size=0.10,
+    train_data, test_data, train_label, test_label = train_test_split(data, label, test_size=test_ratio,
                                                                   random_state=0)
     return train_data, test_data, train_label, test_label
 
