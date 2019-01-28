@@ -84,7 +84,7 @@ model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['acc'])
 
 # datagen.fit(x_train)
 
-history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=10)
+history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=0.2, epochs=20)
 
 model.save(filepath='/Users/eis/Desktop/data/model-bn.h5')
 
@@ -98,6 +98,3 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
-
-score = model.evaluate(x_test, y_test, batch_size=32)
-print(score)
