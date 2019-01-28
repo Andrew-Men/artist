@@ -174,8 +174,7 @@ if FLAGS.mode == 'train':
         rotation_range=20,
         # width_shift_range=0.2,
         # height_shift_range=0.1,
-        # zoom_range=0.1,
-        horizontal_flip=True,
+        zoom_range=0.1,
         fill_mode='nearest')
 
     datagen.fit(x_train)
