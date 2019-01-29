@@ -158,7 +158,7 @@ def _savemodel():
     if FLAGS.save != 0:
         model.save(filepath='model.h5')
 
-x_train, y_train, x_val, y_val = load_and_preprocess()
+x_train, y_train = load_and_preprocess()
 if FLAGS.mode == 'train':
     if FLAGS.model == 'cnn':
         model = _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate)
