@@ -21,7 +21,4 @@ result_label = np.argmax(result,axis=1)
 #with open('result.txt',"w") as f:
        # f.write(str(result_label)) 
         
-f = open('result.npy','wb')
-np.save(f,str(result_label))
-f.close()
-print('result finished')
+np.save('result.npy',result_label)
