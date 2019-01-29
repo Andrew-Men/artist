@@ -15,6 +15,7 @@ tf.app.flags.DEFINE_string("model", 'cnn', "model")
 tf.app.flags.DEFINE_string("fig", "0", "whether save training visualization figure")
 tf.app.flags.DEFINE_string("save", "0", "whether save the trained model")
 tf.app.flags.DEFINE_integer("epoch", 30, "training epochs")
+tf.app.flags.DEFINE_integer("enhance", 0, "data enhancement")
 tf.app.flags.DEFINE_float("dropout_rate", 0.2, "")
 tf.app.flags.DEFINE_float("learnrate", 0.00001, "")
 tf.app.flags.DEFINE_float("val_split", 0.2, "validation split rate")
@@ -174,14 +175,20 @@ if FLAGS.mode == 'train':
         rotation_range=20,
         # width_shift_range=0.2,
         # height_shift_range=0.1,
-        zoom_range=0.1,
+        # zoom_range=0.1,
         fill_mode='nearest')
 
     datagen.fit(x_train)
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=12, class_weight={0:1.0/61,1:1.0/56,2:1.0/18,3:1.0/48,4:1.0/26,5:1.0/33,6:1.0/36,7:1.0/34,8:1.0/36,9:10./21,10:1.0/36})
+
+    class_w = {0:1.0/61,1:1.0/56,2:1.0/18,3:1.0/48,4:1.0/26,5:1.0/33,6:1.0/36,7:1.0/34,8:1.0/36,9:10./21,10:1.0/36}
+    if FLAGS.enhance == 0:
+        history = model.fit(x_train, y_train, batch_size=32, validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=12, class_weight=class_w)
+    else:
+        history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=32), validation_data=(x_val, y_val), epochs=epoch, steps_per_epoch=12, class_weight=class_w)
     _savemodel()
 elif FLAGS.mode == 'load':
     model = load_model(filepath='model.h5')
+
     history = model.fit(x=x_train, y=y_train, batch_size=32, validation_split=FLAGS.val_split, epochs=epoch)
     _savemodel()
 else:
