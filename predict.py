@@ -15,7 +15,7 @@ model = keras.models.load_model(model_name)
 predict_data = np.load(test_data_path)
 model.predict()
 predict_data = predict_data/255.0
-result = model.predict(predict_data)
+result = model.predict(predict_data, batch_size=32)
 result_label = np.argmax(result,axis=1)
 #result_label = [class_names[i] for i in result_label]
 #with open('result.txt',"w") as f:
