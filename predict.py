@@ -11,7 +11,7 @@ train_label_path = 'data/train_label.npy'
 test_data_path = 'data/test_input.npy'
 
 model_name = 'cnn_model.h5'
-model = keras.load_model(model_name)
+model = keras.models.load_model(model_name)
 predict_data = np.load(test_data_path)
 model.predict()
 predict_data = predict_data/255.0
