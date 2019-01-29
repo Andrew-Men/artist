@@ -59,7 +59,7 @@ def load_and_preprocess():
 
 def _cnn(filter_num_1, filter_num_2, dropout_rate, learnrate):
     model = Sequential()
-    model.add(Conv2D(filter_num_1, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+    model.add(Conv2D(filter_num_1, (5, 5), activation='relu', input_shape=(256, 256, 3)))
     model.add(Conv2D(filter_num_1, (3, 3), activation='relu'))
     model.add(BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True))
     model.add(MaxPooling2D(pool_size=(2, 2)))
